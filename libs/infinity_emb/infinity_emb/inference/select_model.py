@@ -55,8 +55,29 @@ def get_engine_type_from_config(
     if config.get("audio_config") and "clap" in config.get("model_type", "").lower():
         return AudioEmbedEngine.from_inference_engine(engine_args.engine)
 
+    # BGE-M3 ColBERT reranker: when model is bge-m3 and --served-model-type rerank is requested
+    elif _is_bge_m3_rerank(engine_args):
+        logger.info(
+            f"Detected BGE-M3 model with rerank capability: "
+            f"using ColBERT MaxSim reranker"
+        )
+        return RerankEngine.bge_m3_colbert
+
     else:
         return EmbedderEngine.from_inference_engine(engine_args.engine)
+
+
+def _is_bge_m3_rerank(engine_args: EngineArgs) -> bool:
+    """Check if this is a BGE-M3 model configured for ColBERT reranking.
+
+    To enable, load with --served-model-name containing 'rerank':
+      infinity_emb v2 --model-id BAAI/bge-m3 --served-model-name bge-m3-rerank
+    """
+    model_name = engine_args.model_name_or_path.lower()
+    is_bge_m3 = "bge-m3" in model_name or "bgem3" in model_name
+    served_name = (engine_args.served_model_name or "").lower()
+    has_rerank_hint = "rerank" in served_name
+    return is_bge_m3 and has_rerank_hint
 
 
 def select_model(

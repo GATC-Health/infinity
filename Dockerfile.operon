@@ -1,0 +1,12 @@
+FROM michaelf34/infinity:0.0.74
+
+# Add FlagEmbedding for BGE-M3 ColBERT reranking support
+RUN pip install FlagEmbedding>=1.3.0 --no-cache-dir
+
+# Copy the modified infinity_emb source with ColBERT reranker
+COPY libs/infinity_emb/infinity_emb/transformer/crossencoder/bge_m3_colbert.py \
+     /usr/local/lib/python3.11/site-packages/infinity_emb/transformer/crossencoder/bge_m3_colbert.py
+COPY libs/infinity_emb/infinity_emb/transformer/utils.py \
+     /usr/local/lib/python3.11/site-packages/infinity_emb/transformer/utils.py
+COPY libs/infinity_emb/infinity_emb/inference/select_model.py \
+     /usr/local/lib/python3.11/site-packages/infinity_emb/inference/select_model.py

@@ -9,6 +9,7 @@ from infinity_emb.transformer.audio.torch import TorchAudioModel
 from infinity_emb.transformer.classifier.torch import SentenceClassifier
 from infinity_emb.transformer.classifier.optimum import OptimumClassifier
 from infinity_emb.transformer.crossencoder.optimum import OptimumCrossEncoder
+from infinity_emb.transformer.crossencoder.bge_m3_colbert import BGEColBERTReranker
 from infinity_emb.transformer.crossencoder.torch import (
     CrossEncoderPatched as CrossEncoderTorch,
 )
@@ -53,6 +54,7 @@ class EmbedderEngine(Enum):
 class RerankEngine(Enum):
     torch = CrossEncoderTorch
     optimum = OptimumCrossEncoder
+    bge_m3_colbert = BGEColBERTReranker
 
     @staticmethod
     def from_inference_engine(engine: InferenceEngine):
