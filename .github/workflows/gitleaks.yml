@@ -1,0 +1,32 @@
+name: gitleaks
+
+# Runs on every PR and push to default branch.
+# Fails the check if any new commit introduces a credential-shaped string.
+# OPSEC-RED-2026-001 Phase 3.c / Phase 5 Improvement 1.
+
+on:
+  pull_request:
+  push:
+    branches: [main, master, dev, development]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: true
+          GITLEAKS_ENABLE_COMMENTS: true
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: true
